@@ -17,33 +17,37 @@
 // Note that for older NeoPixel strips you might need to change the third parameter--see the strandtest
 // example for more information on possible values.
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
-
+//
 int NUM_MILLISECONDS_PER_SECOND = 1000;
-int FREQUENCY = 2; // in Hz
-int DELAY_VAL = (int) (1/FREQUENCY * 1/2 * 1000); // delay for half a second
+float FREQUENCY = 100; // in Hz
+int DELAY_VAL = (int) (1/FREQUENCY * 1/2 * NUM_MILLISECONDS_PER_SECOND); // delay for half a second
 
 void setup() {
+  Serial.begin(9600);
   pixels.begin(); // This initializes the NeoPixel library.
+  pixels.clear();
+  pixels.show();
 }
 
-void setAndShowAll(Adafruit_NeoPixel pixels, uint8_t red, uint8_t green, uint8_t blue) {
+void setAndShowAll(uint8_t red, uint8_t green, uint8_t blue) {
+  pixels.clear();
   for(int i = 0; i < NUMPIXELS; i++) {
     pixels.setPixelColor(i, pixels.Color(red, green, blue));
+//    Serial.println(i);
   }
   pixels.show();
+  Serial.println("Showed pixels");
 }
 
 void loop() {
 
   // For a set of NeoPixels the first NeoPixel is 0, second is 1, all the way up to the count of pixels minus one.
 
-  for(int i=0;i < NUMPIXELS;i++){
-
     // pixels.Color takes RGB values, from 0,0,0 up to 255,255,255
-    setAndShowAll(pixels, 0, 150, 150);
+    setAndShowAll(50, 0, 0);
+    Serial.println("set all pixels to red");
     delay(DELAY_VAL);
-    pixels.clear();
+    setAndShowAll(0, 0, 50);
+    Serial.println("set all pixels to green");
     delay(DELAY_VAL);
-
-  }
 }
