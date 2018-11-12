@@ -58,25 +58,30 @@ int drawingMemory[ledsPerStrip*6];
 
 const int config = WS2811_GRB | WS2811_800kHz;
 
+float MAX_FREQ = 30;
+float MIN_FREQ = 5;
+float FREQUENCY = 60; // in Hz
+int NUM_MICROSECONDS_PER_SECOND = 1000000;
+
 OctoWS2811 leds(ledsPerStrip, displayMemory, drawingMemory, config);
 
 void setup() {
   leds.begin();
   leds.show();
   AudioMemory(12);
-//  AudioMemory(15);
+  waveform1.frequency(FREQUENCY);
+  waveform1.amplitude(.6);
   waveform1.begin(WAVEFORM_SINE);
-  waveform1.frequency(100);
-  waveform1.amplitude(.9);
+  pinMode(14, INPUT);
 }
 
-#define RED    0xAA0000
-#define GREEN  0x00FF00
-#define BLUE   0x0000FF
-#define YELLOW 0xFFFF00
-#define PINK   0xFF1088
-#define ORANGE 0xE05800
-#define WHITE  0xFFFFFF
+//#define RED    0xAA0000
+//#define GREEN  0x00FF00
+//#define BLUE   0x0000FF
+//#define YELLOW 0xFFFF00
+//#define PINK   0xFF1088
+//#define ORANGE 0xE05800
+//#define WHITE  0xFFFFFF
 #define BLACK  0x000000
 
 // Less intense...
@@ -87,37 +92,23 @@ void setup() {
 //#define YELLOW 0x101400
 //#define PINK   0x120009
 //#define ORANGE 0x100400
-//#define WHITE  0x101010
-
+#define WHITE  0X777777
 
 void loop() {
-  int microsec = 2000000 / leds.numPixels();  // change them all in 2 seconds
+  float pot_val = analogRead(14);
+  FREQUENCY = map(pot_val, 0, 1024, MIN_FREQ, MAX_FREQ);
+  waveform1.frequency(FREQUENCY);
+  int DELAY_VAL = (int) (1/FREQUENCY * 1/2 * NUM_MICROSECONDS_PER_SECOND); // delay for half a second
 
-  // uncomment for voltage controlled speed
-  // millisec = analogRead(A9) / 40;
-  delayMicroseconds(5000);
+  Serial.println(DELAY_VAL);
+  delayMicroseconds(DELAY_VAL);
   for (int i=0; i<leds.numPixels(); i++){
      leds.setPixel(i, WHITE);
   }
   leds.show();  
-  delayMicroseconds(5000);
+  delayMicroseconds(DELAY_VAL);
   for (int i=0; i<leds.numPixels(); i++){
      leds.setPixel(i, BLACK);
   }
   leds.show();
-//  colorWipe(GREEN, microsec);
-//  colorWipe(BLUE, microsec);
-//  colorWipe(YELLOW, microsec);
-//  colorWipe(PINK, microsec);
-//  colorWipe(ORANGE, microsec);
-//  colorWipe(WHITE, microsec);
-}
-
-void colorWipe(int color, int wait)
-{
-  for (int i=0; i < leds.numPixels(); i++) {
-    leds.setPixel(i, color);
-    leds.show();
-    delayMicroseconds(wait);
-  }
 }
