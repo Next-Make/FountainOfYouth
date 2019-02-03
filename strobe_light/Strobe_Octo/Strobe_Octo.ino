@@ -117,7 +117,7 @@ void setup() {
   leds.show();
   pinMode(PUMP_PIN, OUTPUT);
   ledOn = true;
-  ledPeriod = 1000000 / LED_FREQ;
+  ledPeriod = 1000000 / LED_FREQ; // period in microseconds because ledTimer is an elapsedMicros
   pumpPeriod = 1000 / pumpFreq;
   digitalWrite(PUMP_PIN, HIGH);
   ledColor = 0;
@@ -129,7 +129,7 @@ void loop() {
   freq = map(freq, 0, 1024, MIN_FREQ, MAX_FREQ);
   ledPeriod = 1000000 / freq;
 
-  if(ledTimer < ledPeriod / 1000) {
+  if(ledTimer < ledPeriod / 1000) { // 0.1% duty cycle
     if(!ledOn){
       switch(ledColor) {
         case 0: 
@@ -157,7 +157,7 @@ void loop() {
     ledTimer = 0;
   }
   
-  if(pumpTimer < pumpPeriod / 2) {
+  if(pumpTimer < pumpPeriod / 2) { // 50% duty cycle
     digitalWrite(PUMP_PIN, HIGH);
   } else if (pumpTimer < pumpPeriod) {
     digitalWrite(PUMP_PIN, LOW);
