@@ -1,6 +1,6 @@
 /*  
   Required Connections
-  --------------------  
+  --------------------
     pin 2:  LED Strip #1    OctoWS2811 drives 8 LED Strips.
     pin 14: LED strip #2    All 8 are the same length.
     pin 7:  LED strip #3
@@ -40,8 +40,8 @@
 //#define ORANGE 0x100400
 #define WHITE  0xFFFFFF
 
-#define MAX_FREQ 110
-#define MIN_FREQ 90
+#define MAX_FREQ 65
+#define MIN_FREQ 60
 #define LEDS_PER_STRIP 60
 #define LED_FREQ 60 // Hz
 
@@ -66,18 +66,9 @@ elapsedMicros redTimer;
 elapsedMicros blueTimer;
 elapsedMillis pumpTimer;
 bool ledOn;
-int pumpFreq = 10;
+int pumpFreq = 5;
 int pumpPeriod;
-PIN, OUTPUT);
-  ledOn = true;
-  ledPeriod = 1000000 / LED_FREQ; // period in microseconds because ledTimer is an elapsedMicros
-  pumpPeriod = 1000 / pumpFreq;
-  digitalWrite(PUMP_PIN, HIGH);
-  ledColor = 0;
-}
 
-
-void loop() {
 
 
 /*
@@ -145,23 +136,22 @@ void loop() {
   freq = map(freq, 0, 1024, MIN_FREQ, MAX_FREQ);
   ledPeriod = 1000000 / freq;
 
-  if(ledTimer < ledPeriod / 400) { // 0.1% duty cycle
+  if(ledTimer < ledPeriod / 950) { // 0.1% duty cycle
     if(!ledOn){
-//      switch(ledColor) {
-//        case 0: 
-//          turnLedsOnColor(YELLOW);
-//          ledColor += 1;
-//          break;
-//        case 1:
-//          turnLedsOnColor(PINK);
-//          ledColor += 1;
-//          break;
-//        case 2:
-//          turnLedsOnColor(ORANGE);
-//          ledColor = 0;
-//          break;
-//      }
-      turnLedsOnColor(GREEN);
+      switch(ledColor) {
+        case 0: 
+          turnLedsOnColor(BLUE);
+          ledColor += 1;
+          break;
+        case 1:
+          turnLedsOnColor(GREEN);
+          ledColor += 1;
+          break;
+        case 2:
+          turnLedsOnColor(RED);
+          ledColor = 0;
+          break;
+      }
       ledOn = true;  
     }
     
@@ -174,7 +164,7 @@ void loop() {
     ledTimer = 0;
   }
   
-  if(pumpTimer < pumpPeriod / 2) { // 50% duty cycle
+  if(pumpTimer < pumpPeriod / (11/10)) { // 50% duty cycle
     digitalWrite(PUMP_PIN, HIGH);
   } else if (pumpTimer < pumpPeriod) {
     digitalWrite(PUMP_PIN, LOW);
