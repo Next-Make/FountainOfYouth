@@ -40,8 +40,8 @@
 //#define ORANGE 0x100400
 #define WHITE  0xFFFFFF
 
-#define MAX_FREQ 110
-#define MIN_FREQ 90
+#define MAX_FREQ 62
+#define MIN_FREQ 58
 #define LEDS_PER_STRIP 60
 #define LED_FREQ 60 // Hz
 
@@ -61,23 +61,14 @@ int ledPeriod;
 
 OctoWS2811 leds(LEDS_PER_STRIP, displayMemory, drawingMemory, config);
 
-elapsedMicros ledTimer;
 elapsedMicros redTimer;
 elapsedMicros blueTimer;
 elapsedMillis pumpTimer;
 bool ledOn;
 int pumpFreq = 10;
 int pumpPeriod;
-PIN, OUTPUT);
-  ledOn = true;
-  ledPeriod = 1000000 / LED_FREQ; // period in microseconds because ledTimer is an elapsedMicros
-  pumpPeriod = 1000 / pumpFreq;
-  digitalWrite(PUMP_PIN, HIGH);
-  ledColor = 0;
-}
-
-
-void loop() {
+int redPeriod = 1000000 / (LED_FREQ + 2);
+int bluePeriod = 1000000 / (LED_FREQ - 2);
 
 
 /*
@@ -90,27 +81,6 @@ void turnLedsOn() {
   }
   leds.show();
 }
-
-//void turnLedsOnRed() {
-//  for(int i = 0; i < leds.numPixels(); i++) {
-//    leds.setPixel(i, RED);
-//  }
-//  leds.show();
-//}
-//
-//void turnLedsOnBlue() {
-//  for(int i = 0; i < leds.numPixels(); i++) {
-//    leds.setPixel(i, BLUE);
-//  }
-//  leds.show();
-//}
-//
-//void turnLedsOnGreen() {
-//  for(int i = 0; i < leds.numPixels(); i++) {
-//    leds.setPixel(i, GREEN);
-//  }
-//  leds.show();
-//}
 
 void turnLedsOnColor(int color) {
   for(int i = 0; i < leds.numPixels(); i++) {
@@ -139,40 +109,27 @@ void setup() {
   ledColor = 0;
 }
 
+int ledState = 0; // 0 = none on, 0xff0000 = red on, 0x0000ff = blue one, 0xff00ff = both on
+int newLedState = 0;
 
 void loop() {
-  int freq = analogRead(A4);
-  freq = map(freq, 0, 1024, MIN_FREQ, MAX_FREQ);
-  ledPeriod = 1000000 / freq;
-
-  if(ledTimer < ledPeriod / 400) { // 0.1% duty cycle
-    if(!ledOn){
-//      switch(ledColor) {
-//        case 0: 
-//          turnLedsOnColor(YELLOW);
-//          ledColor += 1;
-//          break;
-//        case 1:
-//          turnLedsOnColor(PINK);
-//          ledColor += 1;
-//          break;
-//        case 2:
-//          turnLedsOnColor(ORANGE);
-//          ledColor = 0;
-//          break;
-//      }
-      turnLedsOnColor(GREEN);
-      ledOn = true;  
-    }
-    
-  } else if (ledTimer < ledPeriod) {
-    if(ledOn) {
-      turnLedsOff();
-      ledOn = false;
-    }
-  } else {
-    ledTimer = 0;
+  newLedState = 0;
+  if(redTimer < redPeriod / 1000) {
+    newLedState += 0xaa0000;
+  } else if (redTimer >= redPeriod) {
+    redTimer = 0;
   }
+
+  if(blueTimer < bluePeriod / 1000) {
+    newLedState += 0x0000ff;
+  } else if (blueTimer >= bluePeriod) {
+    blueTimer = 0;
+  }
+
+  if(newLedState != ledState) {
+    turnLedsOnColor(newLedState);
+  }
+  ledState = newLedState;
   
   if(pumpTimer < pumpPeriod / 2) { // 50% duty cycle
     digitalWrite(PUMP_PIN, HIGH);
