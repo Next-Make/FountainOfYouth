@@ -82,23 +82,30 @@ void turnLedsOn() {
   leds.show();
 }
 
-void turnLedsOnRed() {
-  for(int i = 0; i < leds.numPixels(); i++) {
-    leds.setPixel(i, RED);
-  }
-  leds.show();
-}
+//void turnLedsOnRed() {
+//  for(int i = 0; i < leds.numPixels(); i++) {
+//    leds.setPixel(i, RED);
+//  }
+//  leds.show();
+//}
+//
+//void turnLedsOnBlue() {
+//  for(int i = 0; i < leds.numPixels(); i++) {
+//    leds.setPixel(i, BLUE);
+//  }
+//  leds.show();
+//}
+//
+//void turnLedsOnGreen() {
+//  for(int i = 0; i < leds.numPixels(); i++) {
+//    leds.setPixel(i, GREEN);
+//  }
+//  leds.show();
+//}
 
-void turnLedsOnBlue() {
+void turnLedsOnColor(int color) {
   for(int i = 0; i < leds.numPixels(); i++) {
-    leds.setPixel(i, BLUE);
-  }
-  leds.show();
-}
-
-void turnLedsOnGreen() {
-  for(int i = 0; i < leds.numPixels(); i++) {
-    leds.setPixel(i, GREEN);
+    leds.setPixel(i, color);
   }
   leds.show();
 }
@@ -133,15 +140,15 @@ void loop() {
     if(!ledOn){
       switch(ledColor) {
         case 0: 
-          turnLedsOnBlue();
+          turnLedsOnColor(BLUE);
           ledColor += 1;
           break;
-        case 1:
-          turnLedsOnGreen();
-          ledColor += 1;
-          break;
+//        case 1:
+//          turnLedsOnColor(GREEN);
+//          ledColor += 1;
+//          break;
         case 2:
-          turnLedsOnRed();
+          turnLedsOnColor(RED);
           ledColor = 0;
           break;
       }
